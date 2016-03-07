@@ -2,10 +2,10 @@ import json
 import subprocess
 from slackclient import SlackClient
 
-class MySlackClient(SlackClient):
+class my_slackclient(SlackClient):
 
     def __init__(self, token):
-        super(MySlackClient, self).__init__(token)
+        super(my_slackclient, self).__init__(token)
 
     @staticmethod
     def _run_command(command):
@@ -30,4 +30,3 @@ class MySlackClient(SlackClient):
     def upload_file(self, channel, filename):
         command = 'curl -F file=@' + filename + ' -F channels=' + channel + ' -F token=' + self.token + ' https://slack.com/api/files.upload'
         self._run_command(command.split())
-
