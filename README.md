@@ -1,4 +1,9 @@
-# MySlackClient
+# slackutil
+
+A collection of utilities to make writing slackbots easier.
+
+## my_slackclient
+
 Builds upon [SlackClient](https://github.com/slackhq/python-slackclient) for commonly used actions for bots.
 
 * `post_message`: simply send a message to a channel as the user attached to the API token
