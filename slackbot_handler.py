@@ -47,7 +47,7 @@ class slackbot_handler(object):
         pass
 
     @abstractmethod
-    def can_handle(self, fulltext, tokens):
+    def can_handle(self, fulltext, tokens, edited):
         pass
 
     @abstractmethod
