@@ -10,6 +10,9 @@ from abc import ABCMeta, abstractmethod
 class slackbot_handler(object):
     __metaclass__  = ABCMeta
 
+    def __init__(self, config):
+        self.config = config
+
     @staticmethod
     def _run_command(command):
         p = subprocess.Popen(command, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
@@ -50,4 +53,3 @@ class slackbot_handler(object):
     @abstractmethod
     def handle(self, fulltext, tokens, slackclient, channel, user):
         pass
-
