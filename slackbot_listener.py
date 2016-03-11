@@ -114,6 +114,7 @@ class slackbot_listener(object):
                                                     error = handler.handle(text, tokens, slackclient, channel, user)
                                                 except Exception as e:
                                                     error = True
+                                                    print repr(e)
                                                 break
                                         if error:
                                             slackclient.post_message(channel, 'Sorry, I encountered an error handling your request!')
