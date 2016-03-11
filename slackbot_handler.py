@@ -11,7 +11,7 @@ class slackbot_handler(object):
     __metaclass__  = ABCMeta
 
     def __init__(self, config):
-        self.config = config
+        self._config = config
 
     @staticmethod
     def _run_command(command):
