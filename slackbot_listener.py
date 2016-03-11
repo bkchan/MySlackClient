@@ -46,7 +46,20 @@ class slackbot_listener(object):
         else:
             print "error getting user_id of bot"
 
+        helpmessage = ''
+        for handler in handlers:
+            name = handler.get_handler_name()
+            commands, examples = handler.get_commands_and_examples()
+            helpmessage += '*' + name + '*\n'
+            for command in commands:
+                helpmessage += '\t' + command + '\n'
+            helpmessage += '\nExamples:\n'
+            for example in examples:
+                helpmessage += '\t`' + example + '`\n'
+
         keywords = self.config.get('Configuration', 'keywords').split()
+        helpword = self.config.get('Configuration', 'helpword')
+
         while True:
             time_now = calendar.timegm(time.gmtime())
             print "connecting at time " + str(time_now)
@@ -84,20 +97,26 @@ class slackbot_listener(object):
                             if channel and text and user:
                                 text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore')
                                 if int(float(item['ts'])) >= time_now:
-                                    handled = False
-                                    error = False
                                     tokens = text.split()
-                                    for handler in handlers:
-                                        if handler.can_handle(text, tokens, edited):
-                                            slackclient.show_is_typing(channel)
-                                            handled = True
-                                            try:
-                                                error = handler.handle(text, tokens, slackclient, channel, user)
-                                            except Exception as e:
-                                                error = True
-                                            break
-                                    if error:
-                                        slackclient.post_message(channel, 'Sorry, I encountered an error handling your request!')
+                                    if text in keywords and helpword:
+                                        slackclient.post_message(channel, 'Please follow `' + text + '` with a command.  Use `' + text + ' ' + helpword + '` to show available commands.')
+                                    elif tokens[1] == helpword:
+                                        slackclient.post_message(channel, helpmessage);
+
+                                    else:
+                                        handled = False
+                                        error = False
+                                        for handler in handlers:
+                                            if handler.can_handle(text, tokens, edited):
+                                                slackclient.show_is_typing(channel)
+                                                handled = True
+                                                try:
+                                                    error = handler.handle(text, tokens, slackclient, channel, user)
+                                                except Exception as e:
+                                                    error = True
+                                                break
+                                        if error:
+                                            slackclient.post_message(channel, 'Sorry, I encountered an error handling your request!')
                     time.sleep(0.5)
             else:
                 print 'connection failed, invalid token?'
