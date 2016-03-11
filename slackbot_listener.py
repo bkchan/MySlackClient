@@ -53,7 +53,11 @@ class slackbot_listener(object):
             helpmessage += '*' + name + '*\n'
             for command in commands:
                 helpmessage += '\t' + command + '\n'
-            helpmessage += '\nExamples:\n'
+
+        helpmessage += '\nExamples:\n'
+
+        for handler in handlers:
+            commands, examples = handler.get_commands_and_examples()
             for example in examples:
                 helpmessage += '\t`' + example + '`\n'
 
