@@ -19,7 +19,7 @@ class slackbot_handler(object):
         return iter(p.stdout.readline, b'')
 
     @staticmethod
-    def get_json_data_through_rest(url, timeout = 30):
+    def _get_json_data_through_rest_get(url, timeout = 30):
         socket.setdefaulttimeout(timeout)
         try:
             json_data = urllib.urlopen(url).read()
@@ -43,7 +43,7 @@ class slackbot_handler(object):
         pass
 
     @abstractmethod
-    def show_commands(self):
+    def get_commands_and_examples(self):
         pass
 
     @abstractmethod
