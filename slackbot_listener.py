@@ -15,27 +15,27 @@ if __name__ == '__main__' and __package__ is None:
 class slackbot_listener(object):
 
     def __init__(self, ini_file):
-        self.config = ConfigParser.ConfigParser()       
-        self.config.read(ini_file)
+        self._config = ConfigParser.ConfigParser()       
+        self._config.read(ini_file)
 
     def _get_lock(self):
         global lock_socket
         lock_socket = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
         try:
-            lock_socket.bind('\0' + self.config.get('Configuration', 'daemon_name'))
+            lock_socket.bind('\0' + self._config.get('Configuration', 'daemon_name'))
         except socket.error:
             sys.exit()
 
     def run(self):
         self._get_lock()
 
-        modules_location = self.config.get('Configuration', 'modules_location')
+        modules_location = self._config.get('Configuration', 'modules_location')
         handlers = []
-        for handler_name in self.config.get('Configuration', 'handler_list').split():
+        for handler_name in self._config.get('Configuration', 'handler_list').split():
             this_class = getattr(importlib.import_module(modules_location + '.' + handler_name), handler_name)
-            handlers.append(this_class(self.config))
+            handlers.append(this_class(self._config))
 
-        slackclient = my_slackclient(self.config.get('Configuration', 'token'))
+        slackclient = my_slackclient(self._config.get('Configuration', 'token'))
 
         myself = None
         json_data = json.loads(slackclient.api_call('auth.test'))
@@ -61,8 +61,8 @@ class slackbot_listener(object):
             for example in examples:
                 helpmessage += '\t`' + example + '`\n'
 
-        keywords = self.config.get('Configuration', 'keywords').split()
-        helpword = self.config.get('Configuration', 'helpword')
+        keywords = self._config.get('Configuration', 'keywords').split()
+        helpword = self._config.get('Configuration', 'helpword')
 
         while True:
             time_now = calendar.timegm(time.gmtime())
@@ -103,11 +103,17 @@ class slackbot_listener(object):
                                 if int(float(item['ts'])) >= time_now:
                                     tokens = text.split()
                                     if text in keywords and helpword:
+                                        slackclient.show_is_typing(channel)
                                         slackclient.post_message(channel, 'Please follow `' + text + '` with a command.  Use `' + text + ' ' + helpword + '` to show available commands.')
                                     elif tokens[1] == helpword:
+                                        slackclient.show_is_typing(channel)
                                         slackclient.post_message(channel, helpmessage);
 
                                     else:
+                                        if keywords:
+                                            slackclient.show_is_typing(channel)
+                                            slackclient.post_message(channel, '@' + user + ', I am working on your request: `' + text + '`')
+
                                         handled = False
                                         error = False
                                         for handler in handlers:
@@ -122,6 +128,9 @@ class slackbot_listener(object):
                                                 break
                                         if error:
                                             slackclient.post_message(channel, 'Sorry, I encountered an error handling your request!')
+                                        if keywords and not handled:
+                                            slackclient.post_message(channel, 'Sorry, I didn\'t recognize `' + tokens[1] + '`.  Please use `' + tokens[0] + ' ' + helpword + '` for a list of commands.')
+
                     time.sleep(0.5)
             else:
                 print 'connection failed, invalid token?'
