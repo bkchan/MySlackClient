@@ -79,11 +79,11 @@ class slackbot_listener(object):
                             edited = False
                             if ('type' in item and item['type'] == 'message') and ('channel' in item):
                                 channel = item['channel']
-                                if ('subtype' in item and item['subtype'] == 'message_changed') and ('message' in item and 'text' in item['message'] and 'type' in item['message'] and item['message']['type'] == 'message' and 'user' in item['message']):
+                                if ('subtype' in item and item['subtype'] == 'message_changed') and ('message' in item and 'text' in item['message'] and 'type' in item['message'] and item['message']['type'] == 'message' and 'user' in item['message'] and item['message']['user'] != myself):
                                     text = item['message']['text']
                                     user = item['message']['user']
                                     edited = True
-                                elif 'text' in item and 'user' in item:
+                                elif 'text' in item and 'user' in item and item['user'] != myself:
                                     text = item['text']
                                     user = item['user']
                                 if text:
@@ -105,7 +105,7 @@ class slackbot_listener(object):
                                     if text in keywords and helpword:
                                         slackclient.show_is_typing(channel)
                                         slackclient.post_message(channel, 'Please follow `' + text + '` with a command.  Use `' + text + ' ' + helpword + '` to show available commands.')
-                                    elif tokens[1] == helpword:
+                                    elif keywords and tokens[1] == helpword:
                                         slackclient.show_is_typing(channel)
                                         slackclient.post_message(channel, helpmessage);
 
