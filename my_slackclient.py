@@ -14,7 +14,8 @@ class my_slackclient(SlackClient):
         return iter(p.stdout.readline, b'')
 
     def post_message(self, channel, text):
-        text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore')
+        if isinstance(text, unicode):
+            text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore')
         self.api_call('chat.postMessage', channel = channel, text = text, as_user = True, unfurl_links = False, link_names = True)
 
     def show_is_typing(self, channel):
