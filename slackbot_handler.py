@@ -4,7 +4,7 @@ import random
 import socket
 import sys
 import time
-import urllib
+import urllib2
 from abc import ABCMeta, abstractmethod
 
 class slackbot_handler(object):
@@ -20,9 +20,20 @@ class slackbot_handler(object):
 
     @staticmethod
     def _get_json_data_through_rest_get(url, timeout = 30):
-        socket.setdefaulttimeout(timeout)
         try:
-            json_data = urllib.urlopen(url).read()
+            json_data = urllib2.urlopen(urllib2.Request(url), timeout=timeout).read()
+            if (json_data):
+                return json.loads(json_data)
+            return None
+        except Exception as e:
+            return None
+
+    @staticmethod
+    def _get_json_data_through_authenticated_rest_get(url, username, password, timeout = 30):
+        try:
+            req = urllib2.Request(url)
+            req.add_header('Authorization', "Basic " + (username + ':' + password).encode('base64').rstrip())
+            json_data = urllib2.urlopen(req, timeout=timeout).read()
             if (json_data):
                 return json.loads(json_data)
             return None
@@ -30,10 +41,11 @@ class slackbot_handler(object):
             return None
 
     def _download_file(self, url, extension, timeout = 30):
-        socket.setdefaulttimeout(timeout)
         filename = '/tmp/' + self.get_handler_name() + '-' + str(calendar.timegm(time.gmtime())) + '-' + str(random.randint(1, sys.maxint)) + '.' + extension;
         try:
-            urllib.urlretrieve(url, filename)
+            data = urllib2.urlopen(urllib2.Request(url), timeout=timeout).read()
+            with open(filename, "wb") as destfile:
+                destfile.write(data)
             return filename
         except:
             return None
