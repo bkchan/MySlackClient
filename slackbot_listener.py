@@ -99,7 +99,7 @@ class slackbot_listener(object):
                                     else:
                                         text = None
 
-                            if channel and text and user:
+                            if channel and text and user and not user['is_bot']:
                                 text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore')
                                 if int(float(item['ts'])) >= time_now:
                                     tokens = text.split()
@@ -113,7 +113,7 @@ class slackbot_listener(object):
                                     else:
                                         if keywords:
                                             slackclient.show_is_typing(channel)
-                                            slackclient.post_message(channel, '@' + user + ', I am working on your request: `' + text + '`')
+                                            slackclient.post_message(channel, '@' + user['name'] + ', I am working on your request: `' + text + '`')
 
                                         handled = False
                                         error = False
