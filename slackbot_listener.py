@@ -4,6 +4,7 @@ import importlib
 import json
 import socket
 import time
+import traceback
 import unicodedata
 from slackutil.my_slackclient import my_slackclient
 from slackutil.slackbot_handler import slackbot_handler
@@ -124,7 +125,7 @@ class slackbot_listener(object):
                                                     error = handler.handle(text, tokens, slackclient, channel, user)
                                                 except Exception as e:
                                                     error = True
-                                                    print repr(e)
+                                                    traceback.print_exc()
                                                 break
                                         if error:
                                             slackclient.post_message(channel, 'Sorry, I encountered an error handling your request!')
