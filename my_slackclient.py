@@ -25,7 +25,7 @@ class my_slackclient(SlackClient):
         try:
             json_data = json.loads(self.api_call('users.info', user = user))
             if 'ok' in json_data and json_data['ok'] and 'user' in json_data and 'name' in json_data['user']:
-                return json_data['user']['name']
+                return json_data['user']
         except Exception as e:
             pass
         return user
