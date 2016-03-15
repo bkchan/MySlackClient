@@ -125,6 +125,7 @@ class slackbot_listener(object):
                                                 slackclient.show_is_typing(channel)
                                                 handled = True
                                                 try:
+                                                    print '[' + strftime("%Y-%m-%d %H:%M:%S") + ']: ' + handler.get_handler_name() + ' to handle request on ' + channel + ' from @' + user['name'] + ': ' + text
                                                     error = handler.handle(text, tokens, slackclient, channel, user)
                                                 except Exception as e:
                                                     error = True
