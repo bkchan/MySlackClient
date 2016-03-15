@@ -9,6 +9,7 @@ import traceback
 import unicodedata
 from slackutil.my_slackclient import my_slackclient
 from slackutil.slackbot_handler import slackbot_handler
+from time import strftime
 
 if __name__ == '__main__' and __package__ is None:
     from os import sys, path
@@ -115,6 +116,7 @@ class slackbot_listener(object):
                                         if keywords:
                                             slackclient.show_is_typing(channel)
                                             slackclient.post_message(channel, '@' + user['name'] + ', I am working on your request: `' + text + '`')
+                                            print '[' + strftime("%Y-%m-%d %H:%M:%S") + ']: received on ' + channel + ' from @' + user['name'] + ': ' + text
 
                                         handled = False
                                         error = False
