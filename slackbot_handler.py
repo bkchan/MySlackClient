@@ -41,7 +41,10 @@ class slackbot_handler(object):
             return None
 
     def _download_file(self, url, extension, timeout = 30):
-        filename = '/tmp/' + self.get_handler_name() + '-' + str(calendar.timegm(time.gmtime())) + '-' + str(random.randint(1, sys.maxint)) + '.' + extension;
+        handler_name = self.get_handler_name()
+        handler_name = handler_name.replace(' ', '__SPACE__')
+        handler_name = handler_name.replace('/', '__SLASH__')
+        filename = '/tmp/' + handler_name + '-' + str(calendar.timegm(time.gmtime())) + '-' + str(random.randint(1, sys.maxint)) + '.' + extension;
         try:
             data = urllib2.urlopen(urllib2.Request(url), timeout=timeout).read()
             with open(filename, "wb") as destfile:
