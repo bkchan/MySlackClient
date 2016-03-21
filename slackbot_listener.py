@@ -66,6 +66,9 @@ class slackbot_listener(object):
 
         keywords = self._config.get('Configuration', 'keywords').split()
         helpword = self._config.get('Configuration', 'helpword')
+        broadcast_word = self._config.get('Configuration', 'broadcast_word')
+        broadcast_users = self._config.get('Configuration', 'broadcast_users').split()
+        broadcast_text = None
 
         while True:
             time_now = calendar.timegm(time.gmtime())
@@ -111,6 +114,33 @@ class slackbot_listener(object):
                                     elif keywords and tokens[1] == helpword:
                                         slackclient.show_is_typing(channel)
                                         slackclient.post_message(channel, helpmessage);
+
+                                    elif broadcast_word and ((keywords and tokens[1] == broadcast_word) or (not keywords and tokens[0] == broadcast_word)) and user['name'] in broadcast_users:
+                                        if keywords:
+                                            del tokens[0]
+                                        del tokens[0]
+                                        if tokens[0] == '__preview__':
+                                            del tokens[0]
+                                            broadcast_text = ' '.join(tokens)
+                                            if not broadcast_text:
+                                                broadcast_text = None
+                                            else:
+                                                slackclient.post_message(channel, 'PREVIEW: ' + broadcast_text)
+                                        elif broadcast_text and tokens[0] == '__broadcast__':
+                                            new_slackclient = my_slackclient(self._config.get('Configuration', 'token'))
+                                            reply = new_slackclient.server.api_requester.do(self._config.get('Configuration', 'token'), "rtm.start")
+                                            if reply.code == 200:
+                                                login_data = json.loads(reply.read().decode('utf-8'))
+                                                if login_data["ok"]:
+                                                    channels = []
+                                                    for c in login_data['channels']:
+                                                        if c['is_member']:
+                                                            channels.append(c)
+                                                    channels.extend(login_data['groups'])
+                                                    channels.extend(login_data['ims'])
+                                                    for c in channels:
+                                                        slackclient.post_message(c['id'], broadcast_text)
+                                                    broadcast_text = None
 
                                     else:
                                         if keywords:
