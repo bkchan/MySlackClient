@@ -18,7 +18,7 @@ if __name__ == '__main__' and __package__ is None:
 class slackbot_listener(object):
 
     def __init__(self, ini_file):
-        self._config = ConfigParser.ConfigParser()       
+        self._config = ConfigParser.ConfigParser()
         self._config.read(ini_file)
 
     def _get_lock(self):
@@ -66,8 +66,8 @@ class slackbot_listener(object):
 
         keywords = self._config.get('Configuration', 'keywords').split()
         helpword = self._config.get('Configuration', 'helpword')
-        broadcast_word = self._config.get('Configuration', 'broadcast_word')
-        broadcast_users = self._config.get('Configuration', 'broadcast_users').split()
+        adminword = self._config.get('Configuration', 'adminword')
+        adminusers = self._config.get('Configuration', 'adminusers').split()
         broadcast_text = None
 
         while True:
@@ -115,7 +115,7 @@ class slackbot_listener(object):
                                         slackclient.show_is_typing(channel)
                                         slackclient.post_message(channel, helpmessage);
 
-                                    elif broadcast_word and ((keywords and tokens[1] == broadcast_word) or (not keywords and tokens[0] == broadcast_word)) and user['name'] in broadcast_users:
+                                    elif adminword and ((keywords and tokens[1] == adminword) or (not keywords and tokens[0] == adminword)) and user['name'] in
                                         if keywords:
                                             del tokens[0]
                                         del tokens[0]
