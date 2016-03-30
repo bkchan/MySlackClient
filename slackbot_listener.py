@@ -95,7 +95,7 @@ class slackbot_listener(object):
                                 if text:
                                     found = False if keywords else True
                                     for keyword in keywords:
-                                        if text.startswith(keyword) or text.startswith(keyword + ' '):
+                                        if text == keyword or text.startswith(keyword + ' '):
                                             found = True
                                             break
 
