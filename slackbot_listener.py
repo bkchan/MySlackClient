@@ -76,6 +76,7 @@ class slackbot_listener(object):
             if slackclient.rtm_connect():
                 print "connected"
                 while True:
+                    sys.stdout.flush()
                     data = slackclient.rtm_read()
                     if data:
                         for item in data:
@@ -147,6 +148,7 @@ class slackbot_listener(object):
                                             slackclient.show_is_typing(channel)
                                             slackclient.post_message(channel, '@' + user['name'] + ', I am working on your request: `' + text + '`')
                                             print '[' + strftime("%Y-%m-%d %H:%M:%S") + ']: received on ' + channel + ' from @' + user['name'] + ': ' + text
+                                            sys.stdout.flush()
 
                                         handled = False
                                         error = False
@@ -156,6 +158,7 @@ class slackbot_listener(object):
                                                 handled = True
                                                 try:
                                                     print '[' + strftime("%Y-%m-%d %H:%M:%S") + ']: ' + handler.get_handler_name() + ' to handle request on ' + channel + ' from @' + user['name'] + ': ' + text
+                                                    sys.stdout.flush()
                                                     error = handler.handle(text, tokens, slackclient, channel, user)
                                                 except Exception as e:
                                                     error = True
