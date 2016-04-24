@@ -6,7 +6,6 @@ import socket
 import sys
 import time
 import traceback
-import unicodedata
 from slackutil.my_slackclient import my_slackclient
 from slackutil.slackbot_handler import slackbot_handler
 from time import strftime
@@ -41,7 +40,7 @@ class slackbot_listener(object):
         slackclient = my_slackclient(self._config.get('Configuration', 'token'))
 
         myself = None
-        json_data = json.loads(slackclient.api_call('auth.test'))
+        json_data = slackclient.api_call('auth.test')
         if 'ok' in json_data and 'user_id' in json_data:
             myself = json_data['user_id']
         if myself:
@@ -106,7 +105,6 @@ class slackbot_listener(object):
                                         text = None
 
                             if channel and text and user and not user['is_bot']:
-                                text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore')
                                 if int(float(item['ts'])) >= time_now:
                                     tokens = text.split()
                                     if text in keywords and helpword:
