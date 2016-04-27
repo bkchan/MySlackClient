@@ -112,7 +112,13 @@ class slackbot_listener(object):
                                         slackclient.post_message(channel, 'Please follow `' + text + '` with a command.  Use `' + text + ' ' + helpword + '` to show available commands.')
                                     elif keywords and tokens[1] == helpword:
                                         slackclient.show_is_typing(channel)
-                                        slackclient.post_message(channel, helpmessage);
+                                        response = slackclient.api_call('im.open', user=user['id'])
+                                        if response['ok']:
+                                            if channel != response['channel']['id']:
+                                                slackclient.post_message(channel, '@' + user['name'] + ', to avoid spamming this channel, I have sent you a direct 
+                                            slackclient.post_message(response['channel']['id'], helpmessage)
+                                        else:
+                                            slackclient.post_message(channel, helpmessage);
 
                                     elif adminword and ((keywords and tokens[1] == adminword) or (not keywords and tokens[0] == adminword)) and user['name'] in
                                         if keywords:
