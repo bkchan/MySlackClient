@@ -6,6 +6,7 @@ import socket
 import sys
 import time
 import traceback
+import unicodedata
 from slackutil.my_slackclient import my_slackclient
 from slackutil.slackbot_handler import slackbot_handler
 from time import strftime
@@ -151,7 +152,8 @@ class slackbot_listener(object):
                                         if keywords:
                                             slackclient.show_is_typing(channel)
                                             slackclient.post_message(channel, '@' + user['name'] + ', I am working on your request: `' + text + '`')
-                                            print '[' + strftime("%Y-%m-%d %H:%M:%S") + ']: received on ' + channel + ' from @' + user['name'] + ': ' + text
+                                            text_out = unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore')
+                                            print '[' + strftime("%Y-%m-%d %H:%M:%S") + ']: received on ' + channel + ' from @' + user['name'] + ': ' + text_out
                                             sys.stdout.flush()
 
                                         handled = False
@@ -161,7 +163,8 @@ class slackbot_listener(object):
                                                 slackclient.show_is_typing(channel)
                                                 handled = True
                                                 try:
-                                                    print '[' + strftime("%Y-%m-%d %H:%M:%S") + ']: ' + handler.get_handler_name() + ' to handle request on ' + channel + ' from @' + user['name'] + ': ' + text
+                                                    text_out = unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore')
+                                                    print '[' + strftime("%Y-%m-%d %H:%M:%S") + ']: ' + handler.get_handler_name() + ' to handle request on ' + channel + ' from @' + user['name'] + ': ' + text_out
                                                     sys.stdout.flush()
                                                     error = handler.handle(text, tokens, slackclient, channel, user)
                                                 except Exception as e:
