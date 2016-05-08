@@ -147,6 +147,9 @@ class slackbot_listener(object):
                                                     for c in channels:
                                                         slackclient.post_message(c['id'], broadcast_text)
                                                     broadcast_text = None
+                                        elif tokens[0] == '__restart__':
+                                            slackclient.post_message(channel, 'Restarting ...')
+                                            sys.exit()
 
                                     else:
                                         if keywords:
