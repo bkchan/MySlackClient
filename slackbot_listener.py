@@ -135,8 +135,8 @@ class slackbot_listener(object):
                                         elif broadcast_text and tokens[0] == '__broadcast__':
                                             new_slackclient = my_slackclient(self._config.get('Configuration', 'token'))
                                             reply = new_slackclient.server.api_requester.do(self._config.get('Configuration', 'token'), "rtm.start")
-                                            if reply.code == 200:
-                                                login_data = json.loads(reply.read().decode('utf-8'))
+                                            if reply.status_code == 200:
+                                                login_data = reply.json()                                            
                                                 if login_data["ok"]:
                                                     channels = []
                                                     for c in login_data['channels']:
