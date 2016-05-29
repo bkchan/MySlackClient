@@ -131,7 +131,7 @@ class slackbot_listener(object):
                                             if not broadcast_text:
                                                 broadcast_text = None
                                             else:
-                                                slackclient.post_message(channel, '_PREVIEW_' + broadcast_text)
+                                                slackclient.post_message(channel, '_PREVIEW_: ' + broadcast_text)
                                         elif broadcast_text and tokens[0] == '__broadcast__':
                                             new_slackclient = my_slackclient(self._config.get('Configuration', 'token'))
                                             reply = new_slackclient.server.api_requester.do(self._config.get('Configuration', 'token'), "rtm.start")
