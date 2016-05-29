@@ -2,6 +2,7 @@ import calendar
 import ConfigParser
 import importlib
 import json
+import re
 import socket
 import sys
 import time
@@ -126,12 +127,11 @@ class slackbot_listener(object):
                                             del tokens[0]
                                         del tokens[0]
                                         if tokens[0] == '__preview__':
-                                            del tokens[0]
-                                            broadcast_text = ' '.join(tokens)
+                                            broadcast_text = re.sub(r'^.* ' + tokens[0] + ' *', '', text)
                                             if not broadcast_text:
                                                 broadcast_text = None
                                             else:
-                                                slackclient.post_message(channel, 'PREVIEW: ' + broadcast_text)
+                                                slackclient.post_message(channel, '_PREVIEW_' + broadcast_text)
                                         elif broadcast_text and tokens[0] == '__broadcast__':
                                             new_slackclient = my_slackclient(self._config.get('Configuration', 'token'))
                                             reply = new_slackclient.server.api_requester.do(self._config.get('Configuration', 'token'), "rtm.start")
