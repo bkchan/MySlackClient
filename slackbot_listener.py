@@ -33,6 +33,7 @@ class slackbot_listener(object):
     def run(self):
         self._get_lock()
 
+        listen_to_bots = self._config.getboolean('Configuration', 'listen_to_bots')
         modules_location = self._config.get('Configuration', 'modules_location')
         handlers = []
         for handler_name in self._config.get('Configuration', 'handler_list').split():
@@ -106,7 +107,7 @@ class slackbot_listener(object):
                                     else:
                                         text = None
 
-                            if channel and text and user and not user['is_bot']:
+                            if channel and text and user and (not user['is_bot'] or listen_to_bots):
                                 if int(float(item['ts'])) >= time_now:
                                     tokens = text.split()
                                     if text in keywords and helpword:
