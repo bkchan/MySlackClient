@@ -19,7 +19,7 @@ if __name__ == '__main__' and __package__ is None:
 class slackbot_listener(object):
 
     def __init__(self, ini_file):
-        self._config = ConfigParser.ConfigParser()
+        self._config = ConfigParser.ConfigParser()       
         self._config.read(ini_file)
 
     def _get_lock(self):
@@ -80,6 +80,7 @@ class slackbot_listener(object):
                 while True:
                     sys.stdout.flush()
                     data = slackclient.rtm_read()
+                    keyword_used = ''
                     if data:
                         for item in data:
                             channel = None
@@ -100,7 +101,10 @@ class slackbot_listener(object):
                                     for keyword in keywords:
                                         if text == keyword or text.startswith(keyword + ' '):
                                             found = True
+                                            keyword_used = text.split()[0]
                                             break
+                                    if keywords and channel.startswith('D'):
+                                        found = True
 
                                     if found:
                                         user = slackclient.get_user(user)
@@ -110,22 +114,26 @@ class slackbot_listener(object):
                             if channel and text and user and (not user['is_bot'] or listen_to_bots):
                                 if int(float(item['ts'])) >= time_now:
                                     tokens = text.split()
+
+                                    for keyword in keywords:
+                                        if text.startswith(keyword + ' '):
+                                            del tokens[0]
+                                            break
+
                                     if text in keywords and helpword:
                                         slackclient.show_is_typing(channel)
                                         slackclient.post_message(channel, 'Please follow `' + text + '` with a command.  Use `' + text + ' ' + helpword + '` to show available commands.')
-                                    elif keywords and tokens[1] == helpword:
+                                    elif keywords and tokens[0] == helpword:
                                         slackclient.show_is_typing(channel)
                                         response = slackclient.api_call('im.open', user=user['id'])
                                         if response['ok']:
                                             if channel != response['channel']['id']:
-                                                slackclient.post_message(channel, '@' + user['name'] + ', to avoid spamming this channel, I have sent you a direct 
+                                                slackclient.post_message(channel, '@' + user['name'] + ', to avoid spamming this channel, I have sent you a direct message with help information.')
                                             slackclient.post_message(response['channel']['id'], helpmessage)
                                         else:
                                             slackclient.post_message(channel, helpmessage);
 
-                                    elif adminword and ((keywords and tokens[1] == adminword) or (not keywords and tokens[0] == adminword)) and user['name'] in
-                                        if keywords:
-                                            del tokens[0]
+                                    elif adminword and (tokens[0] == adminword) and user['name'] in adminusers:
                                         del tokens[0]
                                         if tokens[0] == '__preview__':
                                             broadcast_text = re.sub(r'^.* ' + tokens[0] + ' *', '', text)
@@ -137,7 +145,7 @@ class slackbot_listener(object):
                                             new_slackclient = my_slackclient(self._config.get('Configuration', 'token'))
                                             reply = new_slackclient.server.api_requester.do(self._config.get('Configuration', 'token'), "rtm.start")
                                             if reply.status_code == 200:
-                                                login_data = reply.json()                                            
+                                                login_data = reply.json()
                                                 if login_data["ok"]:
                                                     channels = []
                                                     for c in login_data['channels']:
@@ -178,7 +186,11 @@ class slackbot_listener(object):
                                         if error:
                                             slackclient.post_message(channel, 'Sorry, I encountered an error handling your request!')
                                         if keywords and not handled:
-                                            slackclient.post_message(channel, 'Sorry, I didn\'t recognize `' + tokens[1] + '`.  Please use `' + tokens[0] + ' ' + helpword + '` for a list of commands.')
+                                            message = 'Sorry, I didn\'t recognize `' + tokens[0] + '`.  Please use `'
+                                            if keyword_used:
+                                                message += keyword_used + ' '
+                                            message += helpword + '` for a list of commands.'
+                                            slackclient.post_message(channel, message)
 
                     time.sleep(0.5)
             else:
