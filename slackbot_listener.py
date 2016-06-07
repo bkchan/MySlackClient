@@ -18,9 +18,10 @@ if __name__ == '__main__' and __package__ is None:
 
 class slackbot_listener(object):
 
-    def __init__(self, ini_file):
+    def __init__(self, ini_file, lock = True):
         self._config = ConfigParser.ConfigParser()       
         self._config.read(ini_file)
+        self._lock = lock
 
     def _get_lock(self):
         global lock_socket
@@ -31,7 +32,8 @@ class slackbot_listener(object):
             sys.exit()
 
     def run(self):
-        self._get_lock()
+        if self._lock:
+            self._get_lock()
 
         listen_to_bots = self._config.getboolean('Configuration', 'listen_to_bots')
         modules_location = self._config.get('Configuration', 'modules_location')
