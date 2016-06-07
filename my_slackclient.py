@@ -12,7 +12,10 @@ class my_slackclient(SlackClient):
         return iter(p.stdout.readline, b'')
 
     def post_message(self, channel, text):
-        self.api_call('chat.postMessage', channel = channel, text = text, as_user = True, unfurl_links = False, link_names = True)
+        return self.api_call('chat.postMessage', channel = channel, text = text, as_user = True, unfurl_links = False, link_names = True)
+        
+    def delete_message(self, channel, ts):
+        return self.api_call('chat.delete', channel = channel, ts = ts, as_user = True)
 
     def show_is_typing(self, channel):
         self.server.send_to_websocket({'type': 'typing', 'channel': channel, 'id': 1})
