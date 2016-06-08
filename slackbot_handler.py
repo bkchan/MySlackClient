@@ -62,9 +62,9 @@ class slackbot_handler(object):
         pass
 
     @abstractmethod
-    def can_handle(self, fulltext, tokens, edited):
+    def can_handle(self, data, fulltext, tokens, edited):
         pass
 
     @abstractmethod
-    def handle(self, fulltext, tokens, slackclient, channel, user):
+    def handle(self, data, fulltext, tokens, slackclient, channel, user):
         pass
