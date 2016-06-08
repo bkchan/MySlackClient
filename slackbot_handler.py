@@ -39,6 +39,22 @@ class slackbot_handler(object):
             return None
         except Exception as e:
             return None
+            
+    def _download_file_from_slack(self, url, extension, timeout = 30):
+        handler_name = self.get_handler_name()
+        handler_name = handler_name.replace(' ', '__SPACE__')
+        handler_name = handler_name.replace('/', '__SLASH__')
+        filename = '/tmp/' + handler_name + '-' + str(calendar.timegm(time.gmtime())) + '-' + str(random.randint(1, sys.maxint)) + '.' + extension;
+        try:
+            req = urllib2.Request(url)
+            req.add_header('Authorization', 'Bearer ' + self._config.get('Configuration', 'token'))
+            data = urllib2.urlopen(req, timeout=timeout).read()
+            with open(filename, "wb") as destfile:
+                destfile.write(data)
+            return filename
+        except:
+            return None
+
 
     def _download_file(self, url, extension, timeout = 30):
         handler_name = self.get_handler_name()
