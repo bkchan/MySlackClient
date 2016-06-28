@@ -14,6 +14,9 @@ class my_slackclient(SlackClient):
     def post_message(self, channel, text):
         return self.api_call('chat.postMessage', channel = channel, text = text, as_user = True, unfurl_links = False, link_names = True)
         
+    def update_message(self, channel, text, id):
+        return self.api_call('chat.update', channel = channel, ts = id, text = text, as_user = True, unfurl_links = False, link_names = True)
+        
     def delete_message(self, channel, ts):
         return self.api_call('chat.delete', channel = channel, ts = ts, as_user = True)
 
