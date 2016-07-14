@@ -151,9 +151,11 @@ class slackbot_listener(object):
                                                 if login_data["ok"]:
                                                     channels = []
                                                     for c in login_data['channels']:
-                                                        if c['is_member']:
+                                                        if not c['is_archived'] and c['is_member']:
                                                             channels.append(c)
-                                                    channels.extend(login_data['groups'])
+                                                    for c in login_data['groups']:
+                                                        if not c['is_archived']:
+                                                            channels.append(c)
                                                     channels.extend(login_data['ims'])
                                                     for c in channels:
                                                         slackclient.post_message(c['id'], broadcast_text)
@@ -165,7 +167,7 @@ class slackbot_listener(object):
                                     else:
                                         if keywords:
                                             slackclient.show_is_typing(channel)
-                                            slackclient.post_message(channel, '@' + user['name'] + ', I am working on your request: `' + text + '`')
+                                            #slackclient.post_message(channel, '@' + user['name'] + ', I am working on your request: `' + text + '`')
                                             text_out = unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore')
                                             print '[' + strftime("%Y-%m-%d %H:%M:%S") + ']: received on ' + channel + ' from @' + user['name'] + ': ' + text_out
                                             sys.stdout.flush()
