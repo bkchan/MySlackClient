@@ -1,6 +1,12 @@
 import subprocess
 from slackclient import SlackClient
 
+import requests
+from requests.packages.urllib3.exceptions import InsecurePlatformWarning
+from requests.packages.urllib3.exceptions import SNIMissingWarning
+requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
+requests.packages.urllib3.disable_warnings(SNIMissingWarning)
+
 class my_slackclient(SlackClient):
 
     def __init__(self, token):
@@ -13,10 +19,10 @@ class my_slackclient(SlackClient):
 
     def post_message(self, channel, text):
         return self.api_call('chat.postMessage', channel = channel, text = text, as_user = True, unfurl_links = False, link_names = True)
-        
+
     def update_message(self, channel, text, id):
         return self.api_call('chat.update', channel = channel, ts = id, text = text, as_user = True, unfurl_links = False, link_names = True)
-        
+
     def delete_message(self, channel, ts):
         return self.api_call('chat.delete', channel = channel, ts = ts, as_user = True)
 
@@ -35,3 +41,9 @@ class my_slackclient(SlackClient):
     def upload_file(self, channel, filename):
         command = 'curl -F file=@' + filename + ' -F channels=' + channel + ' -F token=' + self.token + ' https://slack.com/api/files.upload'
         self._run_command(command.split())
+
+    def upload_files(self, channel, filenames):
+        for filename in filenames:
+            command = 'curl -s -F file=@' + filename + ' -F channels=' + channel + ' -F token=' + self.token + ' https://slack.com/api/files.upload'
+            p = subprocess.Popen(command, shell=True)
+            p.communicate()
