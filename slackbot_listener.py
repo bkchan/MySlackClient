@@ -76,7 +76,7 @@ class slackbot_listener(object):
 
         while True:
             time_now = calendar.timegm(time.gmtime())
-            print "connecting at time " + str(time_now)
+            print "connecting at time " + str(time_now) + ' [' + strftime("%Y-%m-%d %H:%M:%S") + ']'
             if slackclient.rtm_connect():
                 print "connected"
                 while True:
@@ -195,8 +195,8 @@ class slackbot_listener(object):
                                                 message += keyword_used + ' '
                                             message += helpword + '` for a list of commands.'
                                             slackclient.post_message(channel, message)
-
-                    time.sleep(0.5)
+                    else:
+                        time.sleep(0.5)
             else:
                 print 'connection failed, invalid token?'
                 break
