@@ -45,5 +45,5 @@ class my_slackclient(SlackClient):
     def upload_files(self, channel, filenames):
         for filename in filenames:
             command = 'curl -s -F file=@' + filename + ' -F channels=' + channel + ' -F token=' + self.token + ' https://slack.com/api/files.upload'
-            p = subprocess.Popen(command, shell=True)
+            p = subprocess.Popen(command, shell=True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
             p.communicate()
